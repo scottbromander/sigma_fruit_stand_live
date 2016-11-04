@@ -85,11 +85,12 @@ var player;
 $(document).ready(function(){
     init();
     enable();
+    updatePlayerDisplay();
 });
 
 function enable(){
-  $("#fruitContainer").on("click", ".fruit-button", clickFruitButton);
-
+  $("#fruitContainer").on("click", ".fruit-button", clickBuyButton);
+  $("#playerContainer").on("click", ".player-fruit", clickSellButton);
   setInterval(gameLoop, INTERVAL_TIME);
 }
 
@@ -104,7 +105,7 @@ function init(){
     fruitArray[i] = newFruit;
 
     //invApples
-    player["inv" + newFruit.name] = 0;
+    player["inv" + newFruit.name] = [];
 
     //test code
     newFruit.updatePrice();
@@ -139,20 +140,75 @@ function addFruitToDom(fruit){
   $el.data("price", fruit.price);
 
   fruit.container = $el;
+
+  $("#playerContainer").append("<div class='player-fruit'></div>");
+  $el = $("#playerContainer").children().last();
+  $el.data("name", fruit.name);
+  $el.data("price", fruit.price);
+  console.log($el.data());
+  $el.append("<p id='inv-" + fruit.name + "'></p>");
+  $el.children().last().text(fruit.name + ": 0");
+
+
+}
+
+function updatePlayerDisplay(){
+  $("#playerCash").text("Player Cash: " + player.cash);
+  for(var i = 0; i < fruitArray.length; i++){
+    var fruit = fruitArray[i];
+    var string = fruit.name + ": " + player["inv" + fruit.name].length;
+    string += " - Average price paid: " + averageArray(player["inv" + fruit.name]);
+    $("#inv-" + fruit.name).text(string);
+  }
+}
+
+function clickBuyButton(){
+  console.log("Clicky da fruit button: ", $(this).data());
+  var fruitPrice = $(this).data("price");
+  if(player.cash >= fruitPrice){
+    player.cash -= fruitPrice;
+    player["inv" + $(this).data("name")].push(fruitPrice);
+    updatePlayerDisplay();
+  }
+}
+
+function clickSellButton(){
+  var invArray = player["inv" + $(this).data("name")];
+  if(invArray.length > 0){
+    player.cash += $(this).data("price");
+    invArray.pop();
 }
 
 
-function clickFruitButton(){
-  console.log("Clicky da fruit button: ", $(this).data());
 
-  if(player.cash >= $(this).data("price")){
-    player.cash -= $(this).data("price");
-    player["inv" + $(this).data("name")]++;
-    console.log(player);
-  }
+  updatePlayerDisplay();
 }
 
 //Utility Function
 function randomNumber(min, max){
 	return Math.floor(Math.random() * (1 + max - min) + min);
+}
+
+function averageArray(array){
+  //1,2,3
+  var sum = 0;
+  for(var i = 0; i < array.length; i++){
+    sum += array[i];
+  }
+
+
+  var average = sum/array.length;
+
+  if(isNaN(average)){
+    average = "None Purchased";
+  }
+
+  if(array.length > 0){
+    for(i = 0; i < array.length; i++){
+      array[i] = average;
+    }
+  }
+
+
+  return average;
 }

@@ -1,7 +1,14 @@
 .fruit-button {
   border: 1px solid black;
-  background-color: salmon;
+  background-color: goldenrod;
   width: 100px;
+  display: inline-block;
+}
+
+.player-fruit{
+  border: 1px solid black;
+  background-color: magenta;
+  width: 200px;
   display: inline-block;
 }
 
