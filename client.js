@@ -9,7 +9,8 @@ For this challenge, you will be working with 4 commodities; Apples, Oranges,
 Bananas, and Grapes. Delicious, right?
 
 When the application loads, you will need to have information for each of the
-commodities, specifically the name and the market price of each. This information will need to be displayed in a meaningful way on the DOM.
+commodities, specifically the name and the market price of each. This information
+will need to be displayed in a meaningful way on the DOM.
 
 Every 15 seconds, the prices should change however, and with it, the listed
 price on the DOM. Specifically, the market price of each of the items should
@@ -49,6 +50,109 @@ Master Mode
 Try your hand at styling everything using Bootstrap!
 */
 
+//object - fruit - name / has cost
+//object - player - cash, inv for each fruit ^
+//Time Interval for Cost Change
+
+// fruits
+// Apples, Oranges, Bananas, and Grapes
+var fruitArray = ["Apples", "Oranges", "Grapes", "Pears"];
+
+var MIN_FRUIT_PRICE = 50; //in cents
+var MAX_FRUIT_PRICE = 999; //in cents
+var MIN_PRICE_SWING = 1;
+var MAX_PRICE_SWING = 50;
+var INTERVAL_TIME = 5000; //in milliseconds
+var PLAYER_STARTING_CASH = 50;
+
+//CONSTRUCTOR FUNCTION
+function Fruit(name, price){
+  this.name = name;
+  this.price = price;
+  this.container = {};
+  this.updatePrice = function(){
+    var priceSwing = randomNumber(MIN_PRICE_SWING, MAX_PRICE_SWING)/100;
+    this.price += priceSwing;
+  };
+}
+
+function Player(){
+  this.cash = PLAYER_STARTING_CASH;
+}
+
+var player;
+
 $(document).ready(function(){
-    console.log("Tots works yo.");
+    init();
+    enable();
 });
+
+function enable(){
+  $("#fruitContainer").on("click", ".fruit-button", clickFruitButton);
+
+  setInterval(gameLoop, INTERVAL_TIME);
+}
+
+function init(){
+
+  player = new Player();
+
+  for(var i = 0; i < fruitArray.length; i++){
+    var startingPrice = randomNumber(MIN_FRUIT_PRICE,MAX_FRUIT_PRICE)/100;
+
+    var newFruit = new Fruit(fruitArray[i], startingPrice);
+    fruitArray[i] = newFruit;
+
+    //invApples
+    player["inv" + newFruit.name] = 0;
+
+    //test code
+    newFruit.updatePrice();
+  }
+
+  console.log(player);
+
+  for(i = 0; i < fruitArray.length; i++){
+    addFruitToDom(fruitArray[i]);
+  }
+
+
+}
+
+function gameLoop(){
+  for(var i = 0; i < fruitArray.length; i++){
+    var fruit = fruitArray[i];
+    fruit.updatePrice();
+
+    fruit.container.find(".fruit-price").text(fruit.price);
+    fruit.container.data("price", fruit.price);
+  }
+}
+
+function addFruitToDom(fruit){
+  console.log(fruit);
+  $("#fruitContainer").append("<div class='fruit-button'></div>");
+  var $el = $("#fruitContainer").children().last();
+  $el.append("<p>" + fruit.name + "</p>");
+  $el.append("<p class='fruit-price'>" + fruit.price + "</p>");
+  $el.data("name", fruit.name);
+  $el.data("price", fruit.price);
+
+  fruit.container = $el;
+}
+
+
+function clickFruitButton(){
+  console.log("Clicky da fruit button: ", $(this).data());
+
+  if(player.cash >= $(this).data("price")){
+    player.cash -= $(this).data("price");
+    player["inv" + $(this).data("name")]++;
+    console.log(player);
+  }
+}
+
+//Utility Function
+function randomNumber(min, max){
+	return Math.floor(Math.random() * (1 + max - min) + min);
+}

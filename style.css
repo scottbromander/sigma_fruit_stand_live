@@ -1,0 +1,10 @@
+.fruit-button {
+  border: 1px solid black;
+  background-color: salmon;
+  width: 100px;
+  display: inline-block;
+}
+
+p {
+  text-align: center;
+}
