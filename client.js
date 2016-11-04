@@ -163,7 +163,6 @@ function updatePlayerDisplay(){
 }
 
 function clickBuyButton(){
-  console.log("Clicky da fruit button: ", $(this).data());
   var fruitPrice = $(this).data("price");
   if(player.cash >= fruitPrice){
     player.cash -= fruitPrice;
@@ -177,9 +176,7 @@ function clickSellButton(){
   if(invArray.length > 0){
     player.cash += $(this).data("price");
     invArray.pop();
-}
-
-
+  }
 
   updatePlayerDisplay();
 }
@@ -190,12 +187,10 @@ function randomNumber(min, max){
 }
 
 function averageArray(array){
-  //1,2,3
   var sum = 0;
   for(var i = 0; i < array.length; i++){
     sum += array[i];
   }
-
 
   var average = sum/array.length;
 
@@ -208,7 +203,6 @@ function averageArray(array){
       array[i] = average;
     }
   }
-
 
   return average;
 }
